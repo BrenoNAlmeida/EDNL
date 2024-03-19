@@ -21,7 +21,7 @@ public class AVLTree {
         return node.altura;
     }
 
-    private int getBalanceFactor(Node node) {
+    private int getFatorBalacenamento(Node node) {
         if (node == null) {
             return 0;
         }
@@ -60,16 +60,16 @@ public class AVLTree {
     }
 
     // Rotação dupla à direita (rotação à esquerda seguida por rotação à direita)
-    private Node rotacaoDuplaDireita(Node y) {
-        y.esquerda = rotacaoEsquerda(y.esquerda);
-        return rotacaoDireita(y);
-    }
+    // private Node rotacaoDuplaDireita(Node y) {
+    //     y.esquerda = rotacaoEsquerda(y.esquerda);
+    //     return rotacaoDireita(y);
+    // }
 
-    // Rotação dupla à esquerda (rotação à direita seguida por rotação à esquerda)
-    private Node rotacaoDuplaEsquerda(Node x) {
-        x.direita = rotacaoDireita(x.direita);
-        return rotacaoEsquerda(x);
-    }
+    // // Rotação dupla à esquerda (rotação à direita seguida por rotação à esquerda)
+    // private Node rotacaoDuplaEsquerda(Node x) {
+    //     x.direita = rotacaoDireita(x.direita);
+    //     return rotacaoEsquerda(x);
+    // }
 
     // Método para inserir um novo nó na árvore AVL
     public void insert(int valor) {
@@ -78,7 +78,7 @@ public class AVLTree {
 
     // Método auxiliar para inserir um novo nó na árvore AVL
     private Node insertNode(Node node, int valor) {
-        // Caso base: se o nó for nulo, criamos um novo nó com a chave fornecida
+        // Caso base: se o nó for nulo, criamos um novo nó
         if (node == null) {
             return new Node(valor);
         }
@@ -100,7 +100,7 @@ public class AVLTree {
         node.altura = 1 + Math.max(altura(node.esquerda), altura(node.direita));
 
         // Calcula o fator de balanceamento do nó
-        node.balanceamento = getBalanceFactor(node);
+        node.balanceamento = getFatorBalacenamento(node);
         int balanceamento = node.balanceamento;
         
 
@@ -122,20 +122,20 @@ public class AVLTree {
         return node;
     }
 
-    public void displayStructured() {
-        displayStructuredNode(root, 0);
+    public void exibirArvore() {
+        exibirArvoreNode(root, 0);
     }
 
     // Método auxiliar recursivo para exibir os nós da árvore AVL de forma estruturada
-    private void displayStructuredNode(Node node, int depth) {
+    private void exibirArvoreNode(Node node, int depth) {
         if (node != null) {
-            displayStructuredNode(node.direita, depth + 1);
+            exibirArvoreNode(node.direita, depth + 1);
             System.out.println();
             for (int i = 0; i < depth; i++) {
                 System.out.print("\t");
             }
-            System.out.print(node.valor + "[" + getBalanceFactor(node) + "]");
-            displayStructuredNode(node.esquerda, depth + 1);
+            System.out.print(node.valor + "[" + getFatorBalacenamento(node) + "]");
+            exibirArvoreNode(node.esquerda, depth + 1);
         }
     }
     
@@ -182,7 +182,7 @@ public class AVLTree {
                     node = temp; // Copia o conteúdo do filho não nulo
                 }
             } else {
-                // Nó com dois filhos: obter o sucessor in-order (menor na subárvore direita)
+                // Nó com dois filhos: obtem o sucessor in-order (menor na subárvore direita)
                 Node temp = minValueNode(node.direita);
     
                 // Copiar o valor do sucessor in-order para este nó
@@ -202,23 +202,28 @@ public class AVLTree {
         node.altura = 1 + Math.max(altura(node.esquerda), altura(node.direita));
     
         // Calcula o fator de balanceamento do nó atual
-        int balanceamento = getBalanceFactor(node);
+        int balanceamento = getFatorBalacenamento(node);
     
         // Verifica o balanceamento do nó e realiza rotações, se necessário
         // Nota: se o balanceamento for maior que 1, então o nó está desbalanceado
         // e está inclinado para a esquerda. Se o balanceamento for menor que -1,
         // então o nó está desbalanceado e está inclinado para a direita.
-        if (balanceamento > 1 && getBalanceFactor(node.esquerda) >= 0) {
+
+        // Rotação simples à direita
+        if (balanceamento > 1 && getFatorBalacenamento(node.esquerda) >= 0) {
             return rotacaoDireita(node);
         }
-        if (balanceamento > 1 && getBalanceFactor(node.esquerda) < 0) {
+        // Rotação dupla à direita (rotação à esquerda seguida por rotação à direita)
+        if (balanceamento > 1 && getFatorBalacenamento(node.esquerda) < 0) {
             node.esquerda = rotacaoEsquerda(node.esquerda);
             return rotacaoDireita(node);
         }
-        if (balanceamento < -1 && getBalanceFactor(node.direita) <= 0) {
+        // Rotação simples à esquerda 
+        if (balanceamento < -1 && getFatorBalacenamento(node.direita) <= 0) {
             return rotacaoEsquerda(node);
         }
-        if (balanceamento < -1 && getBalanceFactor(node.direita) > 0) {
+        // Rotação dupla à direita (rotação à esquerda seguida por rotação à direita)
+        if (balanceamento < -1 && getFatorBalacenamento(node.direita) > 0) {
             node.direita = rotacaoDireita(node.direita);
             return rotacaoEsquerda(node);
         }

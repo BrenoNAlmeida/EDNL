@@ -11,13 +11,13 @@ public class main {
 
         // Exibição da árvore AVL em pré-ordem
         System.out.println("Preorder traversal of constructed tree is:");
-        tree.displayStructured();
+        tree.exibirArvore();
         System.err.println("\n----------------------------");
         tree.insert(25);
-        tree.displayStructured();
+        tree.exibirArvore();
         System.err.println("\n----------------------------");
         tree.remove(5);
-        tree.displayStructured();
+        tree.exibirArvore();
         System.err.println("\n----------------------------");
         Node no = tree.search(15);
         System.out.println(no.valor);
