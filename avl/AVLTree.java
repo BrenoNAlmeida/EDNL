@@ -1,9 +1,4 @@
 
-import java.util.LinkedList;
-import java.util.Queue;
-
-
-
 public class AVLTree {
 
     Node root;
@@ -28,35 +23,33 @@ public class AVLTree {
         return altura(node.esquerda) - altura(node.direita);
     }
 
-    private Node rotacaoDireita(Node y) {
-        Node x = y.esquerda;
-        Node T2 = x.direita;
+    private Node rotacaoDireita(Node no) {
 
+        Node e = no.esquerda;
+        Node d = no.direita;
         // Realiza a rotação
-        x.direita = y;
-        y.esquerda = T2;
 
-        // Atualiza as alturas
-        y.altura = Math.max(altura(y.esquerda), altura(y.direita)) + 1;
-        x.altura = Math.max(altura(x.esquerda), altura(x.direita)) + 1;
+        d.direita = no;
+        no.esquerda = e;
+        // Atualiza  fator de balanceamento dos nos
+        no.balanceamento = no.balanceamento - 1 - Math.max(e.balanceamento, 0);
+        d.balanceamento = d.balanceamento - 1 + Math.min(no.balanceamento, 0);
 
-        return x;
+        return d;
     }
 
     // Rotação simples à esquerda
-    private Node rotacaoEsquerda(Node x) {
-        Node y = x.direita;
-        Node T2 = y.esquerda;
-
+    private Node rotacaoEsquerda(Node no ) {
+        Node e = no.esquerda;
+        Node d = no.direita;
         // Realiza a rotação
-        y.esquerda = x;
-        x.direita = T2;
+        e.direita = no;
+        no.esquerda = d;
+        // Atualiza  fator de balanceamento dos nos
+        no.balanceamento = no.balanceamento + 1 - Math.min(d.balanceamento, 0);
+        e.balanceamento = e.balanceamento + 1 + Math.max(no.balanceamento, 0);
+        return e;
 
-        // Atualiza as alturas
-        x.altura = Math.max(altura(x.esquerda), altura(x.direita)) + 1;
-        y.altura = Math.max(altura(y.esquerda), altura(y.direita)) + 1;
-
-        return y;
     }
 
     // Rotação dupla à direita (rotação à esquerda seguida por rotação à direita)
@@ -86,39 +79,19 @@ public class AVLTree {
         // Inserção na subárvore esquerda
         if (valor < node.valor) {
             node.esquerda = insertNode(node.esquerda, valor);
+            node.balanceamento ++;
         }
         // Inserção na subárvore direita
         else if (valor > node.valor) {
             node.direita = insertNode(node.direita, valor);
+            node.balanceamento --;
         }
         // Se a chave já existe na árvore, não fazemos nada
         else {
             return node;
-        }
+        }       
+  
 
-        // Atualiza a altura do nó atual
-        node.altura = 1 + Math.max(altura(node.esquerda), altura(node.direita));
-
-        // Calcula o fator de balanceamento do nó
-        node.balanceamento = getBalanceFactor(node);
-        int balanceamento = node.balanceamento;
-        
-
-           // Realiza rotações se necessário para manter o balanceamento da árvore
-        if (balanceamento > 1 && valor < node.esquerda.valor) {
-            return rotacaoDireita(node);
-        }
-        if (balanceamento < -1 && valor > node.direita.valor) {
-            return rotacaoEsquerda(node);
-        }
-        if (balanceamento > 1 && valor > node.esquerda.valor) {
-            node.esquerda = rotacaoEsquerda(node.esquerda);
-            return rotacaoDireita(node);
-        }
-        if (balanceamento < -1 && valor < node.direita.valor) {
-            node.direita = rotacaoDireita(node.direita);
-            return rotacaoEsquerda(node);
-    }
         return node;
     }
 
