@@ -1,6 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
 package com.mycompany.atv_01;
 
 import java.nio.file.*;
@@ -25,11 +22,12 @@ public class Atv_01 {
         List<Node> caminhoDijkstra = dijkstra();
         long fim_tempo_Dijkstra = System.nanoTime();
 
-        mostrarMatriz(converteMatriz(caminhoDijkstra));
-
         long inicio_tempo_a_estrela = System.nanoTime();
         List<Node> caminhoAStar = aStar();
         long fim_tempo_a_estrela = System.nanoTime();
+
+        mostrarMatriz(converteMatriz(caminhoDijkstra));
+
         mostrarMatriz(converteMatriz(caminhoAStar));
 
         System.out.println("Dijkstra: " + (fim_tempo_Dijkstra - inicio_tempo_Dijkstra) / 1e6 + " ms");
@@ -93,18 +91,18 @@ public class Atv_01 {
 
         float[][] distancias = new float[l][c];
         for (int i = 0; i < l; i++) {
-            Arrays.fill(distancias[i], Integer.MAX_VALUE);
+            Arrays.fill(distancias[i], Float.MAX_VALUE);
         }
         distancias[inicio.x][inicio.y] = 0;
 
         pq.add(inicio);
 
-        // Direções possíveis para movimento (cima, baixo, esquerda, direita)
-        //int[] dx = {-1, 1, 0, 0};
-        //int[] dy = {0, 0, -1, 1};
         // Direções possíveis: cima, baixo, esquerda, direita, e diagonais
-        int[] dx = {-1, 1, 0, 0, -1, -1, 1, 1};
-        int[] dy = {0, 0, -1, 1, -1, 1, -1, 1};
+//            int[] dx = {-1, 1, 0, 0, -1, -1, 1, 1};
+//            int[] dy = {0, 0, -1, 1, -1, 1, -1, 1};
+            
+            int[] dx = {-1, 1, 0, 0};
+            int[] dy = {0, 0, -1, 1};
 
         while (!pq.isEmpty()) {
             Node atual = pq.poll();
@@ -112,18 +110,17 @@ public class Atv_01 {
             //condição de parada
             if (matriz[atual.x][atual.y] == 3) {
                 return reconstruirCaminho(atual);
-
             }
 
-            // Explora os vizinhos (cima, baixo, esquerda, direita)
-            for (int i = 0; i < 8; i++) {
+            // Explora os vizinhos (cima, baixo, esquerda, direita, diagonais)
+            for (int i = 0; i < 4; i++) {
                 // Coordenada x do vizinho
                 int nx = atual.x + dx[i];
                 // Coordenada y do vizinho
                 int ny = atual.y + dy[i];
 
                 if (nx >= 0 && nx < l && ny >= 0 && ny < c && matriz[nx][ny] != 1) {
-                    float custoMovimento = (i < 4) ? 1 : 1.5f; // 1 para horizontal/vertical, 2 para diagonais
+                    float custoMovimento = (i < 4) ? 1 : 1.4f;
                     float novoCusto = atual.custo + custoMovimento;
 
                     if (novoCusto < distancias[nx][ny]) {
@@ -139,17 +136,15 @@ public class Atv_01 {
     }
 
     static List<Node> aStar() {
-
         PriorityQueue<Node> listaAberta = new PriorityQueue<>();
 
         inicio.custo = 0;
-        inicio.heuristica = calcularManhattan(inicio);
+        inicio.heuristica = calcularEuclidiana(inicio);
         listaAberta.add(inicio);
 
         boolean[][] visitado = new boolean[l][c];
 
         while (!listaAberta.isEmpty()) {
-
             Node atual = listaAberta.poll();
 
             if (matriz[atual.x][atual.y] == 3) {
@@ -158,14 +153,14 @@ public class Atv_01 {
 
             visitado[atual.x][atual.y] = true;
 
-            //int[] dx = {-1, 1, 0, 0};
-            //int[] dy = {0, 0, -1, 1};
-            
             // Direções possíveis: cima, baixo, esquerda, direita, e diagonais
-            int[] dx = {-1, 1, 0, 0, -1, -1, 1, 1};
-            int[] dy = {0, 0, -1, 1, -1, 1, -1, 1};
+//            int[] dx = {-1, 1, 0, 0, -1, -1, 1, 1};
+//            int[] dy = {0, 0, -1, 1, -1, 1, -1, 1};
             
-            for (int i = 0; i < 8; i++) {
+            int[] dx = {-1, 1, 0, 0};
+            int[] dy = {0, 0, -1, 1};
+
+            for (int i = 0; i < 4; i++) {
                 int novoX = atual.x + dx[i];
                 int novoY = atual.y + dy[i];
 
@@ -173,9 +168,8 @@ public class Atv_01 {
                 if (novoX >= 0 && novoX < l && novoY >= 0 && novoY < c && matriz[novoX][novoY] != 1 && !visitado[novoX][novoY]) {
                     float custoMovimento = (i < 4) ? 1.0f : 1.5f;
                     float novoCusto = atual.custo + custoMovimento;
-                    Node vizinho = new Node(novoX, novoY, novoCusto, calcularManhattan(new Node(novoX, novoY, 0, 0, null)), atual);
+                    Node vizinho = new Node(novoX, novoY, novoCusto, calcularEuclidiana(new Node(novoX, novoY, 0, 0, null)), atual);
 
-                    
                     listaAberta.add(vizinho);
                 }
             }
@@ -183,33 +177,6 @@ public class Atv_01 {
 
         return new ArrayList<>();
     }
-    
-    //heurística de Manhattan - h(n)= ∣ x destino​ −x atual​ ∣ + ∣y destino −y atual ∣
-    static int calcularManhattan(Node no) {
-    int menorDistancia = Integer.MAX_VALUE;
-
-    for (Node saida : saidas) {
-        int distancia = Math.abs(no.x - saida.x) + Math.abs(no.y - saida.y);
-        if (distancia < menorDistancia) {
-            menorDistancia = distancia;
-        }
-    }
-    
-    return menorDistancia;
-}
-    static int calcularEuclidiana(Node no) {
-    int menorDistancia = Integer.MAX_VALUE;
-
-    for (Node saida : saidas) {
-        int dx = no.x - saida.x;
-        int dy = no.y - saida.y;
-        int distancia = (int) Math.sqrt(dx * dx + dy * dy);
-        menorDistancia = Math.min(menorDistancia, distancia);
-    }
-
-    return menorDistancia;
-}
-
 
     static List<Node> reconstruirCaminho(Node no) {
         List<Node> caminho = new ArrayList<>();
@@ -220,4 +187,33 @@ public class Atv_01 {
         Collections.reverse(caminho);
         return caminho;
     }
+
+    // Cálculo da heurística Euclidiana - h(n) = sqrt((x_destino - x_atual)^2 + (y_destino - y_atual)^2)
+    static float calcularEuclidiana(Node no) {
+        float menorDistancia = Float.MAX_VALUE;
+
+        for (Node saida : saidas) {
+            float dx = no.x - saida.x;
+            float dy = no.y - saida.y;
+            float distancia = (float) Math.sqrt(dx * dx + dy * dy);
+            menorDistancia = Math.min(menorDistancia, distancia);
+        }
+
+        return menorDistancia;
+    }
+
+    //heurística de Manhattan - h(n)= ∣ x destino​ −x atual​ ∣ + ∣y destino −y atual ∣
+    static int calcularManhattan(Node no) {
+        int menorDistancia = Integer.MAX_VALUE;
+
+        for (Node saida : saidas) {
+            int distancia = Math.abs(no.x - saida.x) + Math.abs(no.y - saida.y);
+            if (distancia < menorDistancia) {
+                menorDistancia = distancia;
+            }
+        }
+
+        return menorDistancia;
+    }
+
 }
