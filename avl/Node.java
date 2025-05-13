@@ -1,16 +1,61 @@
+public class Node {
+    protected Object value;
+    protected Node pai;
+    protected Node filhoEsquerdo;
+    protected Node filhoDireito;
+    protected int fb;
 
-class Node {
-    int valor;
-    int altura; // Altura do nó
-    int balanceamento; // Fator de balanceamento do nó
-    Node esquerda;
-    Node direita;
-
-    public Node(int key) {
-        this.valor = key;
-        this.altura = 1; // Por padrão, um novo nó tem altura 1
-        this.balanceamento = 0; // Por padrão, um novo nó tem fator de balanceamento 0
-        this.esquerda = null;
-        this.direita = null;
+    public Node(Object value, Node pai, Node filhoEsquerdo, Node filhoDireito, int fb) {
+        this.value = value;
+        this.pai = pai;
+        this.filhoEsquerdo = filhoEsquerdo;
+        this.filhoDireito = filhoDireito;
+        this.fb = fb;
     }
+
+    public Node() {
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public Node getPai() {
+        return pai;
+    }
+
+    public Node getFilhoEsquerdo() {
+        return filhoEsquerdo;
+    }
+
+    public Node getFilhoDireito() {
+        return filhoDireito;
+    }
+
+    public int getFb() {
+        return fb;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
+    }
+
+    public void setPai(Node pai) {
+        this.pai = pai;
+    }
+
+    public void setFilhoEsquerdo(Node filhoEsquerdo) {
+        this.filhoEsquerdo = filhoEsquerdo;
+    }
+
+    public void setFilhoDireito(Node filhoDireito) {
+        this.filhoDireito = filhoDireito;
+    }
+
+    public void setFb(int fb) {
+        this.fb = fb;
+    }
+    
+    
+    
 }
